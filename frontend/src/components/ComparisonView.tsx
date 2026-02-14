@@ -1,6 +1,7 @@
 import type { Offer } from "../types/mortgage";
 import { useMortgage } from "../hooks/useMortgage";
 import { OfferPanel } from "./OfferPanel";
+import { PaymentsChart } from "./PaymentsChart";
 import { ResultsChart } from "./ResultsChart";
 import { ResultsSummary } from "./ResultsSummary";
 
@@ -80,6 +81,7 @@ export function ComparisonView() {
 
       {state.results && (
         <div className="results">
+          <PaymentsChart results={state.results.results} offers={state.offers} />
           <ResultsChart results={state.results.results} />
           <ResultsSummary results={state.results.results} />
         </div>
