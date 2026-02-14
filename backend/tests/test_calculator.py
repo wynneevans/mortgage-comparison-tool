@@ -21,7 +21,7 @@ def test_repayment_offer_full_schedule():
         interest_rate=4.0,
         fixed_term_years=2,
         mortgage_type="repayment",
-        scenario_rate=6.0,
+        scenario_rates=[6.0],
     )
     result = calculate_offer(offer, loan_amount=200_000, total_term_years=25)
 
@@ -42,7 +42,7 @@ def test_interest_only_offer():
         interest_rate=3.5,
         fixed_term_years=5,
         mortgage_type="interest_only",
-        scenario_rate=5.0,
+        scenario_rates=[5.0],
     )
     result = calculate_offer(offer, loan_amount=150_000, total_term_years=25)
 
@@ -66,7 +66,7 @@ def test_fixed_term_equals_total_term():
         interest_rate=4.5,
         fixed_term_years=25,
         mortgage_type="repayment",
-        scenario_rate=6.0,
+        scenario_rates=[6.0],
     )
     result = calculate_offer(offer, loan_amount=200_000, total_term_years=25)
 
@@ -82,7 +82,7 @@ def test_total_paid_exceeds_loan():
         interest_rate=5.0,
         fixed_term_years=2,
         mortgage_type="repayment",
-        scenario_rate=5.0,
+        scenario_rates=[5.0],
     )
     result = calculate_offer(offer, loan_amount=100_000, total_term_years=25)
     assert result.total_paid > 100_000

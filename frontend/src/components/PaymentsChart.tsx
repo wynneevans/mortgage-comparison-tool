@@ -9,16 +9,18 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
-import type { Offer, OfferResult } from "../types/mortgage";
+import type { OfferResult } from "../types/mortgage";
 
-const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed"];
+const COLORS = [
+  "#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed",
+  "#0891b2", "#be185d", "#4d7c0f", "#9333ea", "#ea580c",
+];
 
 interface PaymentsChartProps {
   results: OfferResult[];
-  offers: Offer[];
 }
 
-export function PaymentsChart({ results, offers }: PaymentsChartProps) {
+export function PaymentsChart({ results }: PaymentsChartProps) {
   // Find fixed period boundaries
   const fixedAreas = results.map((r) => {
     const lastFixed = r.schedule.findLastIndex((dp) => dp.is_fixed_period);
@@ -50,15 +52,16 @@ export function PaymentsChart({ results, offers }: PaymentsChartProps) {
     const monthsAtScenario =
       fixedEndMonth < maxFixedMonth ? maxFixedMonth - fixedEndMonth : 0;
 
-    const offer = offers.find((o) => o.label === r.label);
-    const scenarioRate = offer?.scenario_rate;
+    // Derive scenario rate from the first post-fixed month in the schedule
+    const firstPostFixed = r.schedule.find((dp) => !dp.is_fixed_period);
+    const scenarioRate = firstPostFixed?.annual_rate;
 
     return {
       label: r.label,
       total,
       monthsAtScenario,
       scenarioRate,
-      color: COLORS[i],
+      color: COLORS[i % COLORS.length],
     };
   });
 
@@ -96,7 +99,7 @@ export function PaymentsChart({ results, offers }: PaymentsChartProps) {
                   key={area.label}
                   x1={1}
                   x2={area.endMonth}
-                  fill={COLORS[i]}
+                  fill={COLORS[i % COLORS.length]}
                   fillOpacity={0.05}
                 />
               ),
@@ -106,7 +109,7 @@ export function PaymentsChart({ results, offers }: PaymentsChartProps) {
               key={r.label}
               type="stepAfter"
               dataKey={r.label}
-              stroke={COLORS[i]}
+              stroke={COLORS[i % COLORS.length]}
               strokeWidth={2}
               dot={false}
             />

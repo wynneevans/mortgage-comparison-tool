@@ -1,4 +1,3 @@
-import type { Offer } from "../types/mortgage";
 import { useMortgage } from "../hooks/useMortgage";
 import { OfferPanel } from "./OfferPanel";
 import { PaymentsChart } from "./PaymentsChart";
@@ -45,7 +44,7 @@ export function ComparisonView() {
       </div>
 
       <div className="offers-row">
-        {state.offers.map((offer: Offer, i: number) => (
+        {state.offers.map((offer, i) => (
           <OfferPanel
             key={i}
             offer={offer}
@@ -81,7 +80,7 @@ export function ComparisonView() {
 
       {state.results && (
         <div className="results">
-          <PaymentsChart results={state.results.results} offers={state.offers} />
+          <PaymentsChart results={state.results.results} />
           <ResultsChart results={state.results.results} />
           <ResultsSummary results={state.results.results} />
         </div>

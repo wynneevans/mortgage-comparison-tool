@@ -11,7 +11,10 @@ import {
 } from "recharts";
 import type { OfferResult } from "../types/mortgage";
 
-const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed"];
+const COLORS = [
+  "#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed",
+  "#0891b2", "#be185d", "#4d7c0f", "#9333ea", "#ea580c",
+];
 
 interface ResultsChartProps {
   results: OfferResult[];
@@ -68,7 +71,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
                   key={area.label}
                   x1={1}
                   x2={area.endMonth}
-                  fill={COLORS[i]}
+                  fill={COLORS[i % COLORS.length]}
                   fillOpacity={0.05}
                 />
               )
@@ -78,7 +81,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
               key={r.label}
               type="monotone"
               dataKey={r.label}
-              stroke={COLORS[i]}
+              stroke={COLORS[i % COLORS.length]}
               strokeWidth={2}
               dot={false}
             />

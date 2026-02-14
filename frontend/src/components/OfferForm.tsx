@@ -61,8 +61,8 @@ export function OfferForm({ offer, onChange }: OfferFormProps) {
         </label>
       </div>
       <ScenarioInput
-        value={offer.scenario_rate}
-        onChange={(scenario_rate) => update({ scenario_rate })}
+        values={offer.scenario_rates}
+        onChange={(scenario_rates) => update({ scenario_rates })}
       />
     </div>
   );

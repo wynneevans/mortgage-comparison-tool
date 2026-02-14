@@ -14,10 +14,9 @@ class Offer(BaseModel):
         pattern="^(repayment|interest_only)$",
         description="'repayment' or 'interest_only'",
     )
-    scenario_rate: float = Field(
-        gt=0,
-        le=100,
-        description="Annual interest rate after fixed period ends (%)",
+    scenario_rates: list[float] = Field(
+        min_length=1,
+        description="Annual interest rates after fixed period ends (%), one per scenario",
     )
 
 

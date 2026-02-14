@@ -3,7 +3,7 @@ export interface Offer {
   interest_rate: number;
   fixed_term_years: number;
   mortgage_type: "repayment" | "interest_only";
-  scenario_rate: number;
+  scenario_rates: number[];
 }
 
 export interface CompareRequest {
@@ -40,6 +40,6 @@ export function createDefaultOffer(label: string): Offer {
     interest_rate: 4.0,
     fixed_term_years: 2,
     mortgage_type: "repayment",
-    scenario_rate: 5.5,
+    scenario_rates: [5.5],
   };
 }

@@ -20,6 +20,7 @@ def calculate_offer(
     offer: Offer,
     loan_amount: float,
     total_term_years: int,
+    scenario_rate: float | None = None,
 ) -> OfferResult:
     """Generate a full month-by-month schedule for a single offer."""
     total_months = total_term_years * 12
@@ -37,7 +38,8 @@ def calculate_offer(
             break
 
         in_fixed = month <= fixed_months
-        rate = offer.interest_rate if in_fixed else offer.scenario_rate
+        effective_scenario_rate = scenario_rate if scenario_rate is not None else offer.scenario_rates[0]
+        rate = offer.interest_rate if in_fixed else effective_scenario_rate
         remaining_months = total_months - month + 1
 
         monthly_interest = balance * (rate / 100 / 12)
