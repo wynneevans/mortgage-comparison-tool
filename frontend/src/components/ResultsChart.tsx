@@ -34,11 +34,15 @@ export function ResultsChart({ results }: ResultsChartProps) {
     return { label: r.label, endMonth: lastFixed >= 0 ? lastFixed + 1 : 0 };
   });
 
+  // Only show up to the longest fixed term
+  const maxFixedMonth = Math.max(...fixedAreas.map((a) => a.endMonth));
+  const chartData = data.slice(0, maxFixedMonth);
+
   return (
     <div className="chart-container">
       <h2>Balance Over Time</h2>
       <ResponsiveContainer width="100%" height={400}>
-        <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="month"
