@@ -6,6 +6,7 @@ import { compareMortgages } from "../api/mortgage";
 interface State {
   loanAmount: number;
   totalTermYears: number;
+  longTermRate: number;
   offers: Offer[];
   results: CompareResponse | null;
   loading: boolean;
@@ -15,6 +16,7 @@ interface State {
 type Action =
   | { type: "SET_LOAN_AMOUNT"; value: number }
   | { type: "SET_TOTAL_TERM"; value: number }
+  | { type: "SET_LONG_TERM_RATE"; value: number }
   | { type: "UPDATE_OFFER"; index: number; offer: Offer }
   | { type: "ADD_OFFER" }
   | { type: "REMOVE_OFFER"; index: number }
@@ -28,6 +30,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, loanAmount: action.value };
     case "SET_TOTAL_TERM":
       return { ...state, totalTermYears: action.value };
+    case "SET_LONG_TERM_RATE":
+      return { ...state, longTermRate: action.value };
     case "UPDATE_OFFER": {
       const offers = [...state.offers];
       offers[action.index] = action.offer;
@@ -60,6 +64,7 @@ function reducer(state: State, action: Action): State {
 const initialState: State = {
   loanAmount: 250000,
   totalTermYears: 25,
+  longTermRate: 5.5,
   offers: [
     createDefaultOffer("2-year fix"),
     { ...createDefaultOffer("5-year fix"), fixed_term_years: 5, interest_rate: 4.5 },
@@ -78,13 +83,14 @@ export function useMortgage() {
       const results = await compareMortgages({
         loan_amount: state.loanAmount,
         total_term_years: state.totalTermYears,
+        long_term_rate: state.longTermRate,
         offers: state.offers,
       });
       dispatch({ type: "SUCCESS", results });
     } catch (e) {
       dispatch({ type: "ERROR", error: (e as Error).message });
     }
-  }, [state.loanAmount, state.totalTermYears, state.offers]);
+  }, [state.loanAmount, state.totalTermYears, state.longTermRate, state.offers]);
 
   return { state, dispatch, compare };
 }

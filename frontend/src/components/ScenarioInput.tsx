@@ -20,7 +20,7 @@ export function ScenarioInput({ values, onChange }: ScenarioInputProps) {
 
   return (
     <div className="field">
-      <label>Rate(s) after fixed period (%)</label>
+      <label>Interim rate(s) (%)</label>
       {values.map((value, i) => (
         <div key={i} style={{ display: "flex", gap: "0.25rem", marginTop: i > 0 ? "0.25rem" : 0 }}>
           <input
@@ -50,7 +50,7 @@ export function ScenarioInput({ values, onChange }: ScenarioInputProps) {
         onClick={addRate}
         style={{ marginTop: "0.25rem", fontSize: "0.85rem" }}
       >
-        + Add scenario rate
+        + Add interim rate
       </button>
     </div>
   );

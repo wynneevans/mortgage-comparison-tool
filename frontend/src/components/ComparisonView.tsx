@@ -41,6 +41,22 @@ export function ComparisonView() {
             }
           />
         </div>
+        <div className="field">
+          <label>Long-term rate (%)</label>
+          <input
+            type="number"
+            step="0.1"
+            min="0.1"
+            max="100"
+            value={state.longTermRate}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_LONG_TERM_RATE",
+                value: parseFloat(e.target.value) || 0,
+              })
+            }
+          />
+        </div>
       </div>
 
       <div className="offers-row">
