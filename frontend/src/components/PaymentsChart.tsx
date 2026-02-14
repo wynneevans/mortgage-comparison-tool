@@ -27,10 +27,9 @@ export function PaymentsChart({ results, offers }: PaymentsChartProps) {
 
   const maxFixedMonth = Math.max(...fixedAreas.map((a) => a.endMonth));
 
-  // Build merged dataset with cumulative sums over the full term
-  const months = results[0].schedule.length;
+  // Build merged dataset with cumulative sums up to longest fixed period
   const runningTotals = new Map<string, number>(results.map((r) => [r.label, 0]));
-  const chartData = Array.from({ length: months }, (_, i) => {
+  const chartData = Array.from({ length: maxFixedMonth }, (_, i) => {
     const point: Record<string, number> = { month: i + 1 };
     results.forEach((r) => {
       const prev = runningTotals.get(r.label)!;
