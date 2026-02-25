@@ -7,7 +7,11 @@ app = FastAPI(title="Mortgage Comparison API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://remortgage-helper.web.app",
+        "https://remortgage-helper.firebaseapp.com",
+    ],
     allow_methods=["POST"],
     allow_headers=["*"],
 )
