@@ -1,5 +1,7 @@
 import json
 import logging
+import sys
+import traceback
 
 from firebase_functions import https_fn, options
 from firebase_admin import initialize_app
@@ -7,6 +9,32 @@ from firebase_admin import initialize_app
 # Import the FastAPI app
 from src.mortgage_api.main import app as fastapi_app
 from src.mortgage_api.app_check import verify_token
+
+
+# Configure structured JSON logging for Cloud Run (Gen 2 Cloud Functions)
+class _CloudRunFormatter(logging.Formatter):
+    _SEVERITY = {
+        logging.DEBUG: "DEBUG",
+        logging.INFO: "INFO",
+        logging.WARNING: "WARNING",
+        logging.ERROR: "ERROR",
+        logging.CRITICAL: "CRITICAL",
+    }
+
+    def format(self, record):
+        entry = {
+            "severity": self._SEVERITY.get(record.levelno, "DEFAULT"),
+            "message": record.getMessage(),
+        }
+        if record.exc_info and record.exc_info[0]:
+            entry["stack_trace"] = self.formatException(record.exc_info)
+        return json.dumps(entry)
+
+
+_handler = logging.StreamHandler(sys.stdout)
+_handler.setFormatter(_CloudRunFormatter())
+logging.root.handlers = [_handler]
+logging.root.setLevel(logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +68,7 @@ def api(req: https_fn.Request) -> https_fn.Response:
     token = req.headers.get("X-Firebase-AppCheck")
     is_valid, error_msg = verify_token(token)
     if not is_valid:
+        print(f"APP_CHECK_REJECTED: {error_msg}", flush=True)
         logger.warning(f"App Check rejected: {error_msg}")
         return https_fn.Response(
             response=json.dumps({"error": error_msg}).encode(),
@@ -47,6 +76,7 @@ def api(req: https_fn.Request) -> https_fn.Response:
             headers={"Content-Type": "application/json"},
         )
 
+    print("APP_CHECK_OK: token verified", flush=True)
     logger.info("App Check token verified, forwarding to ASGI app")
 
     import asyncio
@@ -106,7 +136,9 @@ def api(req: https_fn.Request) -> https_fn.Response:
     try:
         asyncio.run(run_asgi())
     except Exception:
-        logger.error("ASGI application failed", exc_info=True)
+        tb = traceback.format_exc()
+        print(f"ASGI_ERROR: {tb}", flush=True)
+        logger.error("ASGI application failed: " + tb)
         return https_fn.Response(
             response=json.dumps({"error": "Internal server error"}).encode(),
             status=500,
