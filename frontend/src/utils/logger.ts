@@ -4,15 +4,20 @@
 
 const isDev = import.meta.env.DEV;
 
+// Set to true to see detailed App Check logs in development
+const VERBOSE_LOGGING = false;
+
 export const logger = {
   debug: (...args: any[]) => {
-    if (isDev) {
+    if (isDev && VERBOSE_LOGGING) {
       console.log(...args);
     }
   },
 
   info: (...args: any[]) => {
-    console.info(...args);
+    if (isDev && VERBOSE_LOGGING) {
+      console.info(...args);
+    }
   },
 
   warn: (...args: any[]) => {

@@ -215,3 +215,6 @@ node_modules/
 # Claude
 .claude/
 backend/venv
+
+# Firebase
+.firebase/
