@@ -1,0 +1,19 @@
+1. Load the JavaScript API with your key.
+
+<head>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeWWngsAAAAAEjIE1zsyWEyJe_8j-822dG-BVgF"></script>
+  <!-- Your code -->
+</head>
+
+2. Call grecaptcha.execute for each action you want to protect.
+
+<script>
+  function onClick(e) {
+    e.preventDefault();
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6LeWWngsAAAAAEjIE1zsyWEyJe_8j-822dG-BVgF', {action: 'LOGIN'});
+    });
+  }
+</script>
+
+Send the response token to your application backend. The response token expires after two minutes.
