@@ -21,6 +21,37 @@ interface PaymentsChartProps {
   results: OfferResult[];
 }
 
+function BlockLabel({
+  viewBox,
+  rates,
+}: {
+  viewBox?: { x: number; y: number; width: number; height: number };
+  rates: { label: string; rate: number | undefined; color: string }[];
+}) {
+  if (!viewBox) return null;
+  const { x, y, width } = viewBox;
+  const cx = x + width / 2;
+  const LINE_H = 14;
+
+  return (
+    <>
+      {rates.map((r, i) => (
+        <text
+          key={r.label}
+          x={cx}
+          y={y + 12 + i * LINE_H}
+          textAnchor="middle"
+          fontSize={10}
+          fill={r.color}
+          fontWeight="600"
+        >
+          {r.label}: {r.rate !== undefined ? `${r.rate.toFixed(2)}%` : "—"}
+        </text>
+      ))}
+    </>
+  );
+}
+
 export function PaymentsChart({ results }: PaymentsChartProps) {
   // Find fixed period boundaries
   const fixedAreas = results.map((r) => {
@@ -29,6 +60,28 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
   });
 
   const maxFixedMonth = Math.max(...fixedAreas.map((a) => a.endMonth));
+
+  // Compute per-block boundaries and rate annotations
+  const sortedEndMonths = [...new Set(fixedAreas.map((a) => a.endMonth))]
+    .filter((m) => m > 0)
+    .sort((a, b) => a - b);
+
+  const blockBoundaries: { x1: number; x2: number }[] = [];
+  let prev = 1;
+  for (const end of sortedEndMonths) {
+    blockBoundaries.push({ x1: prev, x2: end });
+    prev = end + 1;
+  }
+
+  const blockAnnotations = blockBoundaries.map(({ x1, x2 }) => {
+    const idx = x1 - 1;
+    const rates = results.map((r, i) => ({
+      label: r.label,
+      rate: r.schedule[idx]?.annual_rate,
+      color: COLORS[i % COLORS.length],
+    }));
+    return { x1, x2, rates };
+  });
 
   // Build merged dataset with cumulative sums up to longest fixed period
   const runningTotals = new Map<string, number>(results.map((r) => [r.label, 0]));
@@ -108,6 +161,17 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
                 />
               ),
           )}
+          {blockAnnotations.map(({ x1, x2, rates }) => (
+            <ReferenceArea
+              key={`label-${x1}-${x2}`}
+              x1={x1}
+              x2={x2}
+              fill="none"
+              stroke="none"
+              label={<BlockLabel rates={rates} />}
+              ifOverflow="visible"
+            />
+          ))}
           {results.map((r, i) => (
             <Line
               key={`${r.label}-${i}`}
