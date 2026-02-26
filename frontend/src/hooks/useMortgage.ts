@@ -88,7 +88,7 @@ export function useMortgage() {
       });
       dispatch({ type: "SUCCESS", results });
     } catch (e) {
-      dispatch({ type: "ERROR", error: (e as Error).message });
+      dispatch({ type: "ERROR", error: e instanceof Error ? e.message : String(e) });
     }
   }, [state.loanAmount, state.totalTermYears, state.longTermRate, state.offers]);
 
