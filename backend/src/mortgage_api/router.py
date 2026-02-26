@@ -25,6 +25,5 @@ def compare(request: CompareRequest) -> CompareResponse:
                 longest_fixed_months=longest_fixed_months,
                 long_term_rate=request.long_term_rate,
             )
-            result.label = label
-            results.append(result)
+            results.append(result.model_copy(update={"label": label}))
     return CompareResponse(results=results)

@@ -2,7 +2,6 @@
 Shared App Check token verification logic.
 """
 import logging
-from typing import Optional
 
 from firebase_admin import app_check
 from firebase_admin.exceptions import FirebaseError
@@ -10,7 +9,7 @@ from firebase_admin.exceptions import FirebaseError
 logger = logging.getLogger(__name__)
 
 
-def verify_token(token: Optional[str]) -> tuple[bool, Optional[str]]:
+def verify_token(token: str | None) -> tuple[bool, str | None]:
     """
     Verify an App Check token.
 
@@ -32,7 +31,7 @@ def verify_token(token: Optional[str]) -> tuple[bool, Optional[str]]:
         return True, None
     except (ValueError, FirebaseError) as e:
         logger.warning(f"App Check token verification failed: {e}")
-        return False, f"Invalid App Check token: {str(e)}"
+        return False, "App Check token is invalid"
     except Exception as e:
         logger.error(f"Unexpected error during App Check verification: {type(e).__name__}: {e}")
         return False, "App Check verification failed"

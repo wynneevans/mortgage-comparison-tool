@@ -1,3 +1,5 @@
+from typing import Annotated, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -9,12 +11,11 @@ class Offer(BaseModel):
     fixed_term_years: int = Field(
         gt=0, le=40, description="Length of fixed-rate period in years"
     )
-    mortgage_type: str = Field(
+    mortgage_type: Literal["repayment", "interest_only"] = Field(
         default="repayment",
-        pattern="^(repayment|interest_only)$",
         description="'repayment' or 'interest_only'",
     )
-    interim_rates: list[float] = Field(
+    interim_rates: list[Annotated[float, Field(gt=0, le=100)]] = Field(
         min_length=1,
         description="Annual interest rates after fixed period ends until longest fixed period (%), one per scenario",
     )

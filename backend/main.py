@@ -1,14 +1,15 @@
+import asyncio
 import json
 import logging
 import sys
 import traceback
 
-from firebase_functions import https_fn, options
 from firebase_admin import initialize_app
+from firebase_functions import https_fn, options
+from src.mortgage_api.app_check import verify_token
 
 # Import the FastAPI app
 from src.mortgage_api.main import app as fastapi_app
-from src.mortgage_api.app_check import verify_token
 
 
 # Configure structured JSON logging for Cloud Run (Gen 2 Cloud Functions)
@@ -68,7 +69,6 @@ def api(req: https_fn.Request) -> https_fn.Response:
     token = req.headers.get("X-Firebase-AppCheck")
     is_valid, error_msg = verify_token(token)
     if not is_valid:
-        print(f"APP_CHECK_REJECTED: {error_msg}", flush=True)
         logger.warning(f"App Check rejected: {error_msg}")
         return https_fn.Response(
             response=json.dumps({"error": error_msg}).encode(),
@@ -76,10 +76,7 @@ def api(req: https_fn.Request) -> https_fn.Response:
             headers={"Content-Type": "application/json"},
         )
 
-    print("APP_CHECK_OK: token verified", flush=True)
     logger.info("App Check token verified, forwarding to ASGI app")
-
-    import asyncio
 
     # Convert Firebase Request to ASGI scope
     scope = {
