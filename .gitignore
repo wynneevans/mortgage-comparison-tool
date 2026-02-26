@@ -218,3 +218,7 @@ backend/venv
 
 # Firebase
 .firebase/
+
+# Vim swap files
+*.swp
+*.swo
