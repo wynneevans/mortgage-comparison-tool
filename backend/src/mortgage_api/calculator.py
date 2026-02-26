@@ -1,4 +1,4 @@
-from mortgage_api.models import MonthlyDataPoint, Offer, OfferResult
+from .models import MonthlyDataPoint, Offer, OfferResult
 
 
 def _monthly_repayment(balance: float, annual_rate_pct: float, months: int) -> float:

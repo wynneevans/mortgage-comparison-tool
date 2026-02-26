@@ -1,0 +1,57 @@
+Integrating Firebase App Check into your web app using reCAPTCHA Enterprise is an excellent way to ensure that only requests from your legitimate application can access your Cloud Functions and other Firebase services, even for unauthenticated users. This helps protect against abuse and unwanted costs.
+Here's a step-by-step guide to integrate App Check into your web app:
+1. Set Up Your Firebase Project
+First, ensure that Firebase is already added to your JavaScript project. This is a foundational step for using any Firebase services.
+2. Configure reCAPTCHA Enterprise in Google Cloud Console
+Firebase App Check for web apps relies on reCAPTCHA Enterprise to attest to the authenticity of your app.
+Go to the Google Cloud Console and search for "reCAPTCHA Enterprise."
+If prompted, enable the reCAPTCHA Enterprise API.
+Create a new reCAPTCHA Enterprise site key. During creation, you'll need to specify your web app's domains. If you're using Firebase Hosting, include your Firebase Hosting domain.
+Make sure to save this site key, as you'll need it for the next steps.
+3. Register Your App in the Firebase Console
+Next, you need to tell Firebase about your web app and the attestation provider it will use.
+Navigate to the Firebase Console.
+In the left-hand navigation, go to Build > App Check .
+Click "Get started" if it's your first time using App Check.
+You'll see a list of your registered apps. For your web app, select it and click "Register."
+Choose reCAPTCHA Enterprise as the attestation provider.
+Enter the reCAPTCHA Enterprise site key you created in the Google Cloud Console.
+You can optionally configure a custom Time-To-Live (TTL) for App Check tokens. Shorter TTLs offer stronger security but may lead to more frequent attestations.
+4. Add the App Check Library and Initialize it in Your Web App
+Now, you'll integrate the App Check SDK into your client-side code.
+Install the Firebase SDK and App Check library: Make sure you have the Firebase SDK installed and import the necessary modules for App Check.
+    // For modular SDK (recommended)
+    import { initializeApp } from 'firebase/app';
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
+
+    // For compatibility SDK (if you're using the older namespace import)
+    // import firebase from 'firebase/app';
+    // import 'firebase/app-check';
+    ```
+Expand
+Initialize Firebase and App Check: Add the following code to your application before you access any Firebase services. Replace 'your-recaptcha-enterprise-site-key' with the actual site key you obtained.
+    const firebaseConfig = {
+      // Your Firebase project configuration
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "remortgage-helper", // Your project ID
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    // Initialize App Check
+    initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider('your-recaptcha-enterprise-site-key'), //
+      is                 // Enable automatic token refreshing
+    });
+    ```
+Expand
+The `isTokenAutoRefreshEnabled: true` option is important as it tells the SDK to automatically refresh App Check tokens, typically when about 50% of their TTL has elapsed, ensuring continuous protection without manual intervention.
+5. Backend Enforcement (Next Step)
+Once your web app is integrated with App Check, the next crucial step is to enforce App Check on your Cloud Functions. This is where your Cloud Functions will verify the App Check token sent by your web app before processing any requests. Without this enforcement, your functions would still be publicly accessible.
+6. Test with Debug Tokens (Optional but Recommended)
+During development, you might want to test your App Check integration without fully enabling reCAPTCHA Enterprise for your development environment. You can generate debug tokens in the Firebase console and configure your app to use them. This allows you to bypass the reCAPTCHA checks locally while ensuring your App Check setup is correct.
+By following these steps, your web app will be equipped to send attestation tokens with its requests, allowing your Cloud Functions to verify that these requests are indeed coming from a legitimate instance of your application.

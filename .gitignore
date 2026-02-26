@@ -212,3 +212,4 @@ node_modules/
 
 # Claude
 .claude/
+backend/venv

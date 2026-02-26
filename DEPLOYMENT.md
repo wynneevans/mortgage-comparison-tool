@@ -2,53 +2,50 @@
 
 This app uses a split deployment:
 - **Frontend**: Firebase Hosting (static React app)
-- **Backend**: Google Cloud Run (FastAPI Python service)
+- **Backend**: Firebase Cloud Functions (FastAPI Python service)
 
 ## Prerequisites
 
-- Google Cloud SDK installed (`gcloud` CLI)
 - Firebase CLI installed (`firebase` CLI)
-- Docker installed (for local testing)
+- Python 3.13 (for local development)
+- UV package manager (for local development)
 
-## Backend Deployment (Cloud Run)
+## Backend Deployment (Cloud Functions)
 
-### 1. Build and test locally (optional)
+### 1. Test locally with Firebase emulator (optional)
 
 ```bash
-cd backend
-docker build -t mortgage-api .
-docker run -p 8080:8080 mortgage-api
-# Test at http://localhost:8080/api/compare
+# Start the functions emulator
+firebase emulators:start --only functions
+
+# Function will be available at:
+# http://localhost:5001/remortgage-helper/us-central1/api
+
+# Test the API:
+curl -X POST http://localhost:5001/remortgage-helper/us-central1/api/api/compare \
+  -H "Content-Type: application/json" \
+  -d '{"loan_amount": 200000, "total_term_years": 25, "long_term_rate": 5.0, "offers": [...]}'
 ```
 
-### 2. Deploy to Cloud Run
+### 2. Deploy to Cloud Functions
 
 ```bash
-cd backend
-
-# Set your GCP project
-gcloud config set project remortgage-helper
-
-# Deploy to Cloud Run
-gcloud run deploy mortgage-api \
-  --source . \
-  --region europe-west2 \
-  --platform managed \
-  --allow-unauthenticated \
-  --max-instances 10 \
-  --memory 512Mi
+# From project root
+firebase deploy --only functions
 ```
 
 After deployment, you'll get a URL like:
-`https://mortgage-api-HASH-ew.a.run.app`
+`https://us-central1-remortgage-helper.cloudfunctions.net/api`
 
 ### 3. Update frontend environment variable
 
 Edit `frontend/.env.production` and replace the URL:
 
 ```bash
-VITE_API_URL=https://mortgage-api-HASH-ew.a.run.app/api
+VITE_API_URL=https://us-central1-remortgage-helper.cloudfunctions.net/api/api
 ```
+
+Note: The `/api` at the end is important - your FastAPI router uses `/api/compare` endpoint.
 
 ## Frontend Deployment (Firebase)
 
@@ -72,11 +69,19 @@ Your app will be live at: https://remortgage-helper.web.app/
 
 ### Backend changes:
 ```bash
-cd backend
-gcloud run deploy mortgage-api --source .
+# From project root
+firebase deploy --only functions
 ```
 
 ### Frontend changes:
+```bash
+cd frontend
+npm run build
+cd ..
+firebase deploy --only hosting
+```
+
+### Deploy both:
 ```bash
 cd frontend
 npm run build

@@ -83,12 +83,18 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
             tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
           />
           <Tooltip
-            formatter={(value: number) => [
-              `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-              "Cumulative total paid",
-            ]}
-            labelFormatter={(month: number) =>
-              `Month ${month} (Year ${Math.ceil(month / 12)})`
+            formatter={(value: number | undefined) =>
+              value !== undefined
+                ? [
+                    `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    "Cumulative total paid",
+                  ]
+                : ["", ""]
+            }
+            labelFormatter={(month: unknown) =>
+              typeof month === "number"
+                ? `Month ${month} (Year ${Math.ceil(month / 12)})`
+                : ""
             }
           />
           <Legend />

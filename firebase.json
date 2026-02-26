@@ -12,5 +12,19 @@
         "destination": "/index.html"
       }
     ]
-  }
+  },
+  "functions": [
+    {
+      "source": "backend",
+      "codebase": "default",
+      "ignore": [
+        ".venv",
+        ".git",
+        "tests",
+        "*.pyc",
+        "__pycache__"
+      ],
+      "runtime": "python313"
+    }
+  ]
 }

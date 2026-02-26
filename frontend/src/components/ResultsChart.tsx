@@ -56,11 +56,15 @@ export function ResultsChart({ results }: ResultsChartProps) {
             }
           />
           <Tooltip
-            formatter={(value: number) =>
-              `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+            formatter={(value: number | undefined) =>
+              value !== undefined
+                ? `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                : ""
             }
-            labelFormatter={(month: number) =>
-              `Month ${month} (Year ${Math.ceil(month / 12)})`
+            labelFormatter={(month: unknown) =>
+              typeof month === "number"
+                ? `Month ${month} (Year ${Math.ceil(month / 12)})`
+                : ""
             }
           />
           <Legend />

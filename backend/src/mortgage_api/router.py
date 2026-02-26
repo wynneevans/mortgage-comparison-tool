@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from mortgage_api.calculator import calculate_offer
-from mortgage_api.models import CompareRequest, CompareResponse
+from .calculator import calculate_offer
+from .models import CompareRequest, CompareResponse
 
 router = APIRouter(prefix="/api")
 
