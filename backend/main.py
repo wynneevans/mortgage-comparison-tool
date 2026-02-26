@@ -1,9 +1,14 @@
+import json
+import logging
+
 from firebase_functions import https_fn, options
 from firebase_admin import initialize_app
 
 # Import the FastAPI app
 from src.mortgage_api.main import app as fastapi_app
 from src.mortgage_api.app_check import verify_token
+
+logger = logging.getLogger(__name__)
 
 # Initialize Firebase Admin
 initialize_app()
@@ -35,11 +40,14 @@ def api(req: https_fn.Request) -> https_fn.Response:
     token = req.headers.get("X-Firebase-AppCheck")
     is_valid, error_msg = verify_token(token)
     if not is_valid:
+        logger.warning(f"App Check rejected: {error_msg}")
         return https_fn.Response(
-            response=f'{{"error": "{error_msg}"}}'.encode(),
+            response=json.dumps({"error": error_msg}).encode(),
             status=403,
             headers={"Content-Type": "application/json"},
         )
+
+    logger.info("App Check token verified, forwarding to ASGI app")
 
     import asyncio
 
@@ -95,7 +103,15 @@ def api(req: https_fn.Request) -> https_fn.Response:
     async def run_asgi():
         await fastapi_app(scope, receive, send)
 
-    asyncio.run(run_asgi())
+    try:
+        asyncio.run(run_asgi())
+    except Exception:
+        logger.error("ASGI application failed", exc_info=True)
+        return https_fn.Response(
+            response=json.dumps({"error": "Internal server error"}).encode(),
+            status=500,
+            headers={"Content-Type": "application/json"},
+        )
 
     # Build Firebase Response
     response_body = b"".join(body_parts)

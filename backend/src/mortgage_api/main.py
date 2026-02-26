@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -28,10 +29,10 @@ async def lifespan(app: FastAPI):
         try:
             from firebase_admin import app_check, credentials, initialize_app
 
-            project_id = os.getenv("FIREBASE_PROJECT_ID")
+            project_id = os.getenv("PROJECT_ID")
             if not project_id:
-                logger.error("FIREBASE_PROJECT_ID environment variable not set")
-                raise ValueError("FIREBASE_PROJECT_ID is required for App Check")
+                logger.error("PROJECT_ID environment variable not set")
+                raise ValueError("PROJECT_ID is required for App Check")
 
             logger.info(f"Initializing Firebase Admin SDK for project: {project_id}")
             cred = credentials.ApplicationDefault()
@@ -87,7 +88,7 @@ if os.getenv("LOCAL_DEV"):
         is_valid, error_msg = verify_token(token)
         if not is_valid:
             return Response(
-                content=f'{{"error": "{error_msg}"}}',
+                content=json.dumps({"error": error_msg}),
                 status_code=403,
                 media_type="application/json",
             )

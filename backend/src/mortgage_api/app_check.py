@@ -33,3 +33,6 @@ def verify_token(token: Optional[str]) -> tuple[bool, Optional[str]]:
     except (ValueError, FirebaseError) as e:
         logger.warning(f"App Check token verification failed: {e}")
         return False, f"Invalid App Check token: {str(e)}"
+    except Exception as e:
+        logger.error(f"Unexpected error during App Check verification: {type(e).__name__}: {e}")
+        return False, "App Check verification failed"
