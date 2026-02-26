@@ -14,14 +14,19 @@ export const app = initializeApp(firebaseConfig);
 
 // Use debug token in development
 if (import.meta.env.DEV && import.meta.env.VITE_APPCHECK_DEBUG_TOKEN) {
+  console.log('[App Check] Using debug token:', import.meta.env.VITE_APPCHECK_DEBUG_TOKEN);
   // @ts-expect-error - Debug token for development
   self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN;
+} else if (import.meta.env.DEV) {
+  console.warn('[App Check] No debug token found - App Check may fail in development');
 }
 
 // Initialize App Check with reCAPTCHA Enterprise
+console.log('[App Check] Initializing with reCAPTCHA site key:', import.meta.env.VITE_RECAPTCHA_SITE_KEY);
 export const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaEnterpriseProvider(
     import.meta.env.VITE_RECAPTCHA_SITE_KEY
   ),
   isTokenAutoRefreshEnabled: true, // Auto-refresh at 50% TTL
 });
+console.log('[App Check] Initialized successfully');

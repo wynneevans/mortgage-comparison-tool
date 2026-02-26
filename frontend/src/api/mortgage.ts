@@ -10,10 +10,12 @@ export async function compareMortgages(
   // Get App Check token
   let appCheckToken: string | undefined;
   try {
+    console.log('[App Check] Getting token...');
     const tokenResult = await getToken(appCheck, /* forceRefresh */ false);
     appCheckToken = tokenResult.token;
+    console.log('[App Check] Token obtained successfully:', appCheckToken.substring(0, 20) + '...');
   } catch (error) {
-    console.error('Failed to get App Check token:', error);
+    console.error('[App Check] Failed to get token:', error);
     // Continue without token - backend will reject
   }
 

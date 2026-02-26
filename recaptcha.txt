@@ -1,3 +1,6 @@
+Debug Token: remortgage-helper-debug-tokeneD794B36-DE82-4037-9625-87B432025767
+
+
 1. Load the JavaScript API with your key.
 
 <head>
