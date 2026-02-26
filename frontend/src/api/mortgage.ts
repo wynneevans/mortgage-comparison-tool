@@ -1,5 +1,6 @@
 import { getToken } from 'firebase/app-check';
 import { appCheck } from '../firebase';
+import { logger } from '../utils/logger';
 import type { CompareRequest, CompareResponse } from "../types/mortgage";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
@@ -10,12 +11,12 @@ export async function compareMortgages(
   // Get App Check token
   let appCheckToken: string | undefined;
   try {
-    console.log('[App Check] Getting token...');
+    logger.debug('[App Check] Getting token...');
     const tokenResult = await getToken(appCheck, /* forceRefresh */ false);
     appCheckToken = tokenResult.token;
-    console.log('[App Check] Token obtained successfully:', appCheckToken.substring(0, 20) + '...');
+    logger.debug('[App Check] Token obtained successfully:', appCheckToken.substring(0, 20) + '...');
   } catch (error) {
-    console.error('[App Check] Failed to get token:', error);
+    logger.error('[App Check] Failed to get token:', error);
     // Continue without token - backend will reject
   }
 

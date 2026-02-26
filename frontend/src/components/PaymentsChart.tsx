@@ -9,6 +9,7 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
+import { formatCurrency } from "../utils/format";
 import type { OfferResult } from "../types/mortgage";
 
 const COLORS = [
@@ -85,10 +86,7 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
           <Tooltip
             formatter={(value: number | undefined) =>
               value !== undefined
-                ? [
-                    `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-                    "Cumulative total paid",
-                  ]
+                ? [formatCurrency(value), "Cumulative total paid"]
                 : ["", ""]
             }
             labelFormatter={(month: unknown) =>
@@ -102,7 +100,7 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
             (area, i) =>
               area.endMonth > 0 && (
                 <ReferenceArea
-                  key={area.label}
+                  key={`${area.label}-${i}`}
                   x1={1}
                   x2={area.endMonth}
                   fill={COLORS[i % COLORS.length]}
@@ -112,7 +110,7 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
           )}
           {results.map((r, i) => (
             <Line
-              key={r.label}
+              key={`${r.label}-${i}`}
               type="stepAfter"
               dataKey={r.label}
               stroke={COLORS[i % COLORS.length]}
@@ -129,10 +127,9 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
           {maxFixedMonth > 12 ? "s" : ""}
         </h3>
         <ul>
-          {totals.map((t) => (
-            <li key={t.label} style={{ color: t.color }}>
-              <strong>{t.label}:</strong>{" "}
-              £{t.total.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {totals.map((t, index) => (
+            <li key={`${t.label}-${index}`} style={{ color: t.color }}>
+              <strong>{t.label}:</strong> {formatCurrency(t.total)}
               {t.monthsAtScenario > 0 && t.scenarioRate != null && (
                 <span className="scenario-note">
                   {" "}(includes {t.monthsAtScenario} months at scenario rate of {t.scenarioRate}%)

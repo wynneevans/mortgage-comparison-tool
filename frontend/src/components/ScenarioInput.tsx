@@ -22,7 +22,7 @@ export function ScenarioInput({ values, onChange }: ScenarioInputProps) {
     <div className="field">
       <label>Interim rate(s) (%)</label>
       {values.map((value, i) => (
-        <div key={i} style={{ display: "flex", gap: "0.25rem", marginTop: i > 0 ? "0.25rem" : 0 }}>
+        <div key={`rate-${i}-${value}`} style={{ display: "flex", gap: "0.25rem", marginTop: i > 0 ? "0.25rem" : 0 }}>
           <input
             type="number"
             step="0.1"

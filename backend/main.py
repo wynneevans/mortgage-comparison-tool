@@ -1,34 +1,15 @@
 from firebase_functions import https_fn, options
-from firebase_admin import initialize_app, app_check
-from firebase_admin.exceptions import FirebaseError
+from firebase_admin import initialize_app
 
 # Import the FastAPI app
 from src.mortgage_api.main import app as fastapi_app
+from src.mortgage_api.app_check import verify_token
 
 # Initialize Firebase Admin
 initialize_app()
 
 # Set global options
 options.set_global_options(max_instances=10, memory=options.MemoryOption.MB_512)
-
-
-def verify_app_check_token(request: https_fn.Request) -> bool:
-    """
-    Verify the App Check token from the request headers.
-    Returns True if valid, False otherwise.
-    """
-    app_check_token = request.headers.get('X-Firebase-AppCheck')
-
-    if not app_check_token:
-        return False
-
-    try:
-        # Verify the token
-        app_check.verify_token(app_check_token)
-        return True
-    except (ValueError, FirebaseError) as e:
-        print(f"App Check token verification failed: {e}")
-        return False
 
 
 @https_fn.on_request(
@@ -51,11 +32,13 @@ def api(req: https_fn.Request) -> https_fn.Response:
         return https_fn.Response(status=204)
 
     # Verify App Check token
-    if not verify_app_check_token(req):
+    token = req.headers.get("X-Firebase-AppCheck")
+    is_valid, error_msg = verify_token(token)
+    if not is_valid:
         return https_fn.Response(
-            response=b'{"error": "Invalid or missing App Check token"}',
+            response=f'{{"error": "{error_msg}"}}'.encode(),
             status=403,
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
 
     import asyncio

@@ -1,11 +1,8 @@
+import { formatCurrency } from "../utils/format";
 import type { OfferResult } from "../types/mortgage";
 
 interface ResultsSummaryProps {
   results: OfferResult[];
-}
-
-function fmt(n: number): string {
-  return `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function ResultsSummary({ results }: ResultsSummaryProps) {
@@ -22,12 +19,12 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
           </tr>
         </thead>
         <tbody>
-          {results.map((r) => (
-            <tr key={r.label}>
+          {results.map((r, index) => (
+            <tr key={`${r.label}-${index}`}>
               <td>{r.label}</td>
-              <td>{fmt(r.total_paid)}</td>
-              <td>{fmt(r.total_interest)}</td>
-              <td>{fmt(r.total_principal)}</td>
+              <td>{formatCurrency(r.total_paid)}</td>
+              <td>{formatCurrency(r.total_interest)}</td>
+              <td>{formatCurrency(r.total_principal)}</td>
             </tr>
           ))}
         </tbody>
@@ -36,7 +33,7 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
         <p className="difference">
           Difference in total paid:{" "}
           <strong>
-            {fmt(Math.abs(results[0].total_paid - results[1].total_paid))}
+            {formatCurrency(Math.abs(results[0].total_paid - results[1].total_paid))}
           </strong>
         </p>
       )}

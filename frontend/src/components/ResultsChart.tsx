@@ -9,6 +9,7 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
+import { formatCurrency } from "../utils/format";
 import type { OfferResult } from "../types/mortgage";
 
 const COLORS = [
@@ -57,9 +58,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
           />
           <Tooltip
             formatter={(value: number | undefined) =>
-              value !== undefined
-                ? `£${value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                : ""
+              value !== undefined ? formatCurrency(value) : ""
             }
             labelFormatter={(month: unknown) =>
               typeof month === "number"
@@ -72,7 +71,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
             (area, i) =>
               area.endMonth > 0 && (
                 <ReferenceArea
-                  key={area.label}
+                  key={`${area.label}-${i}`}
                   x1={1}
                   x2={area.endMonth}
                   fill={COLORS[i % COLORS.length]}
@@ -82,7 +81,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
           )}
           {results.map((r, i) => (
             <Line
-              key={r.label}
+              key={`${r.label}-${i}`}
               type="monotone"
               dataKey={r.label}
               stroke={COLORS[i % COLORS.length]}

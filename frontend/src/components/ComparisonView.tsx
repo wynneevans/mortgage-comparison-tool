@@ -62,7 +62,7 @@ export function ComparisonView() {
       <div className="offers-row">
         {state.offers.map((offer, i) => (
           <OfferPanel
-            key={i}
+            key={`offer-${i}-${offer.label}`}
             offer={offer}
             index={i}
             canRemove={state.offers.length > 2}
