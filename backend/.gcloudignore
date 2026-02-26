@@ -1,0 +1,45 @@
+# This file specifies files that are intentionally untracked by git and should be
+# excluded from uploads to Cloud Functions for Firebase.
+# See https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore
+
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment files (local development only)
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# UV
+.ruff_cache/
