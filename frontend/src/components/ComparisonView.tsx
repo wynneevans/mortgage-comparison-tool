@@ -1,8 +1,8 @@
 import { useMortgage } from "../hooks/useMortgage";
+import { NumericInput } from "./NumericInput";
 import { OfferPanel } from "./OfferPanel";
 import { PaymentsChart } from "./PaymentsChart";
 import { ResultsChart } from "./ResultsChart";
-import { ResultsSummary } from "./ResultsSummary";
 
 export function ComparisonView() {
   const { state, dispatch, compare } = useMortgage();
@@ -12,49 +12,33 @@ export function ComparisonView() {
       <div className="global-inputs">
         <div className="field">
           <label>Loan amount (£)</label>
-          <input
-            type="number"
-            step="1000"
-            min="1"
+          <NumericInput
             value={state.loanAmount}
-            onChange={(e) =>
-              dispatch({
-                type: "SET_LOAN_AMOUNT",
-                value: parseFloat(e.target.value) || 0,
-              })
-            }
+            step="1000"
+            min={1}
+            integer
+            onChange={(value) => dispatch({ type: "SET_LOAN_AMOUNT", value })}
           />
         </div>
         <div className="field">
           <label>Total term (years)</label>
-          <input
-            type="number"
-            step="1"
-            min="1"
-            max="40"
+          <NumericInput
             value={state.totalTermYears}
-            onChange={(e) =>
-              dispatch({
-                type: "SET_TOTAL_TERM",
-                value: parseInt(e.target.value) || 1,
-              })
-            }
+            step="1"
+            min={1}
+            max={40}
+            integer
+            onChange={(value) => dispatch({ type: "SET_TOTAL_TERM", value })}
           />
         </div>
         <div className="field">
-          <label>Long-term rate (%)</label>
-          <input
-            type="number"
+          <label>Future rate (%)</label>
+          <NumericInput
+            value={state.futureRate}
             step="0.1"
-            min="0.1"
-            max="100"
-            value={state.longTermRate}
-            onChange={(e) =>
-              dispatch({
-                type: "SET_LONG_TERM_RATE",
-                value: parseFloat(e.target.value) || 0,
-              })
-            }
+            min={0.1}
+            max={100}
+            onChange={(value) => dispatch({ type: "SET_FUTURE_RATE", value })}
           />
         </div>
       </div>
@@ -62,9 +46,8 @@ export function ComparisonView() {
       <div className="offers-row">
         {state.offers.map((offer, i) => (
           <OfferPanel
-            key={`offer-${i}-${offer.label}`}
+            key={state.offerIds[i]}
             offer={offer}
-            index={i}
             canRemove={state.offers.length > 2}
             onChange={(updated) =>
               dispatch({ type: "UPDATE_OFFER", index: i, offer: updated })
@@ -96,9 +79,8 @@ export function ComparisonView() {
 
       {state.results && (
         <div className="results">
-          <PaymentsChart results={state.results.results} />
-          <ResultsChart results={state.results.results} />
-          <ResultsSummary results={state.results.results} />
+          <PaymentsChart results={state.results.results} colors={state.results.colors} />
+          <ResultsChart results={state.results.results} colors={state.results.colors} />
         </div>
       )}
     </div>

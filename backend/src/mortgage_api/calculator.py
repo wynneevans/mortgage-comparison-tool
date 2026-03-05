@@ -20,17 +20,12 @@ def calculate_offer(
     offer: Offer,
     loan_amount: float,
     total_term_years: int,
-    interim_rate: float | None = None,
-    longest_fixed_months: int | None = None,
-    long_term_rate: float | None = None,
+    future_rate: float,
 ) -> OfferResult:
     """Generate a full month-by-month schedule for a single offer."""
     total_months = total_term_years * 12
     fixed_months = offer.fixed_term_years * 12
     is_interest_only = offer.mortgage_type == "interest_only"
-    effective_interim_rate = interim_rate if interim_rate is not None else offer.interim_rates[0]
-    effective_longest_fixed = longest_fixed_months if longest_fixed_months is not None else fixed_months
-    effective_long_term_rate = long_term_rate if long_term_rate is not None else effective_interim_rate
 
     schedule: list[MonthlyDataPoint] = []
     balance = loan_amount
@@ -43,12 +38,7 @@ def calculate_offer(
             break
 
         in_fixed = month <= fixed_months
-        if month <= fixed_months:
-            rate = offer.interest_rate
-        elif month <= effective_longest_fixed:
-            rate = effective_interim_rate
-        else:
-            rate = effective_long_term_rate
+        rate = offer.interest_rate if in_fixed else future_rate
         remaining_months = total_months - month + 1
 
         monthly_interest = balance * (rate / 100 / 12)

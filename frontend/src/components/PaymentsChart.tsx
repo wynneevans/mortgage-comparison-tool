@@ -5,20 +5,15 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
 import { formatCurrency } from "../utils/format";
 import type { OfferResult } from "../types/mortgage";
 
-const COLORS = [
-  "#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed",
-  "#0891b2", "#be185d", "#4d7c0f", "#9333ea", "#ea580c",
-];
-
 interface PaymentsChartProps {
   results: OfferResult[];
+  colors: string[];
 }
 
 function BlockLabel({
@@ -52,7 +47,7 @@ function BlockLabel({
   );
 }
 
-export function PaymentsChart({ results }: PaymentsChartProps) {
+export function PaymentsChart({ results, colors }: PaymentsChartProps) {
   // Find fixed period boundaries
   const fixedAreas = results.map((r) => {
     const lastFixed = r.schedule.findLastIndex((dp) => dp.is_fixed_period);
@@ -78,10 +73,12 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
     const rates = results.map((r, i) => ({
       label: r.label,
       rate: r.schedule[idx]?.annual_rate,
-      color: COLORS[i % COLORS.length],
+      color: colors[i],
     }));
     return { x1, x2, rates };
   });
+
+  const monthTicks = Array.from({ length: maxFixedMonth }, (_, i) => i + 1);
 
   // Build merged dataset with cumulative sums up to longest fixed period
   const runningTotals = new Map<string, number>(results.map((r) => [r.label, 0]));
@@ -106,22 +103,26 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
     const monthsAtScenario =
       fixedEndMonth < maxFixedMonth ? maxFixedMonth - fixedEndMonth : 0;
 
-    // Derive scenario rate from the first post-fixed month in the schedule
+    // Derive future rate from the first post-fixed month in the schedule
     const firstPostFixed = r.schedule.find((dp) => !dp.is_fixed_period);
-    const scenarioRate = firstPostFixed?.annual_rate;
+    const futureRate = firstPostFixed?.annual_rate;
 
     return {
       label: r.label,
       total,
       monthsAtScenario,
-      scenarioRate,
-      color: COLORS[i % COLORS.length],
+      futureRate,
+      color: colors[i],
     };
   });
+
+  const minTotal = Math.min(...totals.map((t) => t.total));
 
   return (
     <div className="chart-container">
       <h2>Cumulative Repayments</h2>
+      <div className="chart-with-summary">
+      <div className="chart-area">
       <ResponsiveContainer width="100%" height={400}>
         <ComposedChart
           data={chartData}
@@ -130,16 +131,19 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="month"
-            label={{ value: "Month", position: "insideBottom", offset: -5 }}
-            tickFormatter={(m: number) => (m % 60 === 0 ? `${m / 12}y` : "")}
+            ticks={monthTicks}
+            tickFormatter={(m: number) => m % 12 === 0 ? `${m / 12}y` : ""}
+            interval={0}
+            tickLine={false}
+            minTickGap={0}
           />
           <YAxis
             tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
           />
           <Tooltip
-            formatter={(value: number | undefined) =>
+            formatter={(value: number | undefined, name: string | undefined) =>
               value !== undefined
-                ? [formatCurrency(value), "Cumulative total paid"]
+                ? [formatCurrency(value), name ?? ""]
                 : ["", ""]
             }
             labelFormatter={(month: unknown) =>
@@ -148,7 +152,6 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
                 : ""
             }
           />
-          <Legend />
           {fixedAreas.map(
             (area, i) =>
               area.endMonth > 0 && (
@@ -156,7 +159,7 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
                   key={`${area.label}-${i}`}
                   x1={1}
                   x2={area.endMonth}
-                  fill={COLORS[i % COLORS.length]}
+                  fill={colors[i]}
                   fillOpacity={0.05}
                 />
               ),
@@ -177,31 +180,46 @@ export function PaymentsChart({ results }: PaymentsChartProps) {
               key={`${r.label}-${i}`}
               type="stepAfter"
               dataKey={r.label}
-              stroke={COLORS[i % COLORS.length]}
+              stroke={colors[i]}
               strokeWidth={2}
               dot={false}
             />
           ))}
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
 
       <div className="chart-totals">
         <h3>
-          Total paid over {Math.round(maxFixedMonth / 12)} year
+          Total over {Math.round(maxFixedMonth / 12)} year
           {maxFixedMonth > 12 ? "s" : ""}
         </h3>
         <ul>
-          {totals.map((t, index) => (
-            <li key={`${t.label}-${index}`} style={{ color: t.color }}>
-              <strong>{t.label}:</strong> {formatCurrency(t.total)}
-              {t.monthsAtScenario > 0 && t.scenarioRate != null && (
-                <span className="scenario-note">
-                  {" "}(includes {t.monthsAtScenario} months at scenario rate of {t.scenarioRate}%)
-                </span>
-              )}
-            </li>
-          ))}
+          {totals.map((t, index) => {
+            const diff = t.total - minTotal;
+            return (
+              <li key={`${t.label}-${index}`} style={{ color: t.color }}>
+                <div className="totals-label">{t.label}</div>
+                <div className="totals-amount">{formatCurrency(t.total)}</div>
+                {diff > 0 ? (
+                  <div className="totals-diff totals-diff--more">
+                    +{formatCurrency(diff)} more
+                  </div>
+                ) : (
+                  <div className="totals-diff totals-diff--cheapest">
+                    cheapest
+                  </div>
+                )}
+                {t.monthsAtScenario > 0 && t.futureRate != null && (
+                  <div className="scenario-note">
+                    {t.monthsAtScenario}mo at {t.futureRate}% future rate
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
+      </div>
       </div>
     </div>
   );

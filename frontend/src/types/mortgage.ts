@@ -3,13 +3,12 @@ export interface Offer {
   interest_rate: number;
   fixed_term_years: number;
   mortgage_type: "repayment" | "interest_only";
-  interim_rates: number[];
 }
 
 export interface CompareRequest {
   loan_amount: number;
   total_term_years: number;
-  long_term_rate: number;
+  future_rate: number;
   offers: Offer[];
 }
 
@@ -41,6 +40,5 @@ export function createDefaultOffer(label: string): Offer {
     interest_rate: 4.0,
     fixed_term_years: 2,
     mortgage_type: "repayment",
-    interim_rates: [5.5],
   };
 }

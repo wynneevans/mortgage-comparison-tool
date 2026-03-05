@@ -52,6 +52,8 @@ options.set_global_options(max_instances=10, memory=options.MemoryOption.MB_512)
             "http://localhost:5173",
             "https://remortgage-helper.web.app",
             "https://remortgage-helper.firebaseapp.com",
+            "https://remortgage-helper.com",
+            "https://www.remortgage-helper.com",
         ],
         cors_methods=["POST", "OPTIONS"],
     )

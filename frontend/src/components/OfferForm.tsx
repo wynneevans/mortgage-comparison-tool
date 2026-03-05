@@ -1,5 +1,5 @@
 import type { Offer } from "../types/mortgage";
-import { ScenarioInput } from "./ScenarioInput";
+import { NumericInput } from "./NumericInput";
 
 interface OfferFormProps {
   offer: Offer;
@@ -22,28 +22,23 @@ export function OfferForm({ offer, onChange }: OfferFormProps) {
       </div>
       <div className="field">
         <label>Interest rate (%)</label>
-        <input
-          type="number"
-          step="0.1"
-          min="0.1"
-          max="100"
+        <NumericInput
           value={offer.interest_rate}
-          onChange={(e) =>
-            update({ interest_rate: parseFloat(e.target.value) || 0 })
-          }
+          step="0.1"
+          min={0.1}
+          max={100}
+          onChange={(value) => update({ interest_rate: value })}
         />
       </div>
       <div className="field">
         <label>Fixed term (years)</label>
-        <input
-          type="number"
-          step="1"
-          min="1"
-          max="40"
+        <NumericInput
           value={offer.fixed_term_years}
-          onChange={(e) =>
-            update({ fixed_term_years: parseInt(e.target.value) || 1 })
-          }
+          step="1"
+          min={1}
+          max={40}
+          integer
+          onChange={(value) => update({ fixed_term_years: value })}
         />
       </div>
       <div className="field">
@@ -60,10 +55,6 @@ export function OfferForm({ offer, onChange }: OfferFormProps) {
           <span className="toggle-text">Interest only</span>
         </label>
       </div>
-      <ScenarioInput
-        values={offer.interim_rates}
-        onChange={(interim_rates) => update({ interim_rates })}
-      />
     </div>
   );
 }

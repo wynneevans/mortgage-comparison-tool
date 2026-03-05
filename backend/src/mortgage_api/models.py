@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -15,10 +15,6 @@ class Offer(BaseModel):
         default="repayment",
         description="'repayment' or 'interest_only'",
     )
-    interim_rates: list[Annotated[float, Field(gt=0, le=100)]] = Field(
-        min_length=1,
-        description="Annual interest rates after fixed period ends until longest fixed period (%), one per scenario",
-    )
 
 
 class CompareRequest(BaseModel):
@@ -26,11 +22,11 @@ class CompareRequest(BaseModel):
     total_term_years: int = Field(
         default=25, gt=0, le=40, description="Full mortgage term in years"
     )
-    long_term_rate: float = Field(
+    future_rate: float = Field(
         default=5.5,
         gt=0,
         le=100,
-        description="Annual interest rate after longest fixed period ends (%)",
+        description="Annual interest rate after fixed period ends (%)",
     )
     offers: list[Offer] = Field(
         min_length=1, max_length=5, description="1-5 mortgage offers to compare"
