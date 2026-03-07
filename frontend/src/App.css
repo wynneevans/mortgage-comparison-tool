@@ -178,6 +178,7 @@ header p {
 .chart-area {
   flex: 1;
   min-width: 0;
+  height: 400px;
 }
 
 .chart-totals {
@@ -289,4 +290,42 @@ header p {
   font-size: 0.85rem;
   color: #444;
   margin-top: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 1rem;
+  }
+
+  .global-inputs {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .field input[type="number"],
+  .field input[type="text"] {
+    width: 100%;
+  }
+
+  .offer-panel {
+    min-width: 0;
+  }
+
+  .chart-with-summary {
+    flex-direction: column;
+  }
+
+  .chart-totals {
+    flex: none;
+    width: 100%;
+  }
+
+  .chart-summary {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .chart-area {
+    height: 260px;
+  }
 }
