@@ -327,5 +327,6 @@ header p {
 
   .chart-area {
     height: 260px;
+    flex-shrink: 0;
   }
 }
