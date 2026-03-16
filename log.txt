@@ -1,0 +1,55 @@
+(base) wynne@Wynnes-MBP mortgage-comparison-tool % firebase deploy        
+
+=== Deploying to 'remortgage-helper'...
+
+i  deploying functions, hosting
+i  functions: preparing codebase default for deployment
+i  functions: ensuring required API cloudfunctions.googleapis.com is enabled...
+i  functions: ensuring required API cloudbuild.googleapis.com is enabled...
+i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled...
+i  functions: Loading and analyzing source code for codebase default to determine what to deploy
+(node:92068) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ * Serving Flask app 'serving'
+ * Debug mode: off
+
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+Press CTRL+C to quit
+
+127.0.0.1 - - [05/Mar/2026 20:30:03] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+{"severity": "INFO", "message": "127.0.0.1 - - [05/Mar/2026 20:30:03] \"GET /__/functions.yaml HTTP/1.1\" 200 -"}
+
+127.0.0.1 - - [05/Mar/2026 20:30:03] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+{"severity": "INFO", "message": "127.0.0.1 - - [05/Mar/2026 20:30:03] \"GET /__/quitquitquit HTTP/1.1\" 200 -"}
+
+/bin/sh: line 1: 92077 Terminated: 15          python3.13 "/Users/wynne/github/mortgage-comparison-tool/backend/.venv/lib/python3.13/site-packages/firebase_functions/private/serving.py"
+
+i  functions: Loaded environment variables from .env.
+i  functions: preparing backend directory for uploading...
+i  functions: packaged /Users/wynne/github/mortgage-comparison-tool/backend (43.54 MB) for uploading
+i  functions: ensuring required API run.googleapis.com is enabled...
+i  functions: ensuring required API eventarc.googleapis.com is enabled...
+i  functions: ensuring required API pubsub.googleapis.com is enabled...
+i  functions: ensuring required API storage.googleapis.com is enabled...
+i  functions: generating the service identity for pubsub.googleapis.com...
+i  functions: generating the service identity for eventarc.googleapis.com...
+✔  functions: backend source uploaded successfully
+i  hosting[remortgage-helper]: beginning deploy...
+i  hosting[remortgage-helper]: found 4 files in frontend/dist
+✔  hosting[remortgage-helper]: file upload complete
+i  functions: updating Python 3.13 (2nd Gen) function api(us-central1)...
+✔  functions[api(us-central1)] Successful update operation.
+Function URL (api(us-central1)): https://api-r3pm4oe5mq-uc.a.run.app
+i  hosting[remortgage-helper]: finalizing version...
+✔  hosting[remortgage-helper]: version finalized
+i  hosting[remortgage-helper]: releasing new version...
+✔  hosting[remortgage-helper]: release complete
+
+✔  Deploy complete!
+
+Project Console: https://console.firebase.google.com/project/remortgage-helper/overview
+Hosting URL: https://remortgage-helper.web.app

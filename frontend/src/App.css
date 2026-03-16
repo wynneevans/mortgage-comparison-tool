@@ -21,6 +21,14 @@ header p {
   color: #666;
 }
 
+.app-description {
+  text-align: center;
+  color: #555;
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
 .global-inputs {
   display: flex;
   gap: 1.5rem;
